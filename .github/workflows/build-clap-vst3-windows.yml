@@ -1,4 +1,4 @@
-name: Build Windows x64 CLAP/VST3 Plugin
+name: Build Windows x64 CLAP Plugin
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build CLAP/VST3 for Windows x64
+    name: Build CLAP for Windows x64
     runs-on: windows-latest
 
     steps:
@@ -25,16 +25,14 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: "windows-clap-vst3-cache"
+          shared-key: "windows-clap-cache"
 
-      - name: Build and Bundle CLAP/VST3 Plugin
-        run: cargo run --package xtask --target x86_64-pc-windows-msvc -- bundle fm1_plugin --release
+      - name: Build fm1-plugin
+        run: cargo build --release --target x86_64-pc-windows-msvc --manifest-path crates/fm1-plugin/Cargo.toml
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: fm1-emu-windows-x64-clap-vst3
-          path: |
-            target/x86_64-pc-windows-msvc/release/*.clap
-            target/x86_64-pc-windows-msvc/release/*.vst3
+          name: fm1-emu-windows-x64-clap
+          path: target/x86_64-pc-windows-msvc/release/*.dll
           if-no-files-found: error
