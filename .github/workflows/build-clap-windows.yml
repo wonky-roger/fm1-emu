@@ -27,9 +27,9 @@ jobs:
         with:
           shared-key: "windows-clap-cache"
 
-      # Запускаем сборку всего воркспейса. Cargo сам определит плагин.
+      # Запускаем сборку всего воркспейса
       - name: Build Project Workspace
-        run: cargo build --release --target x86_64-pc-windows-msvc
+        run: cargo build --release --target x86_64-pc-windows-msvc -p fm1-plugin
 
       # Сохраняем все скомпилированные .dll и .clap плагины
       - name: Upload Build Artifacts
