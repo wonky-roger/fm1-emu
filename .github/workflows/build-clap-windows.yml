@@ -1,4 +1,4 @@
-name: Build Windows x64 CLAP Plugin
+name: Build Windows x64 CLAP/VST3 Plugin
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build CLAP for Windows x64
+    name: Build CLAP/VST3 for Windows x64
     runs-on: windows-latest
 
     steps:
@@ -27,14 +27,14 @@ jobs:
         with:
           shared-key: "windows-clap-cache"
 
-      - name: Build fm1-plugin via Manifest
-        run: cargo build --release --target x86_64-pc-windows-msvc --manifest-path crates/fm1-plugin/Cargo.toml
+      - name: Build and Bundle CLAP/VST3 Plugin
+        run: cargo xtask bundle fm1_plugin --release
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: fm1-emu-windows-x64-clap
+          name: fm1-emu-windows-x64-clap-vst3
           path: |
-            target/x86_64-pc-windows-msvc/release/*.dll
-            target/x86_64-pc-windows-msvc/release/*.clap
+            target/release/*.clap
+            target/release/*.vst3
           if-no-files-found: error
