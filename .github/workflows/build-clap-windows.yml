@@ -27,13 +27,17 @@ jobs:
         with:
           shared-key: "windows-clap-cache"
 
-      # Собираем конкретный подпроект с помощью флага -p
-      - name: Build fm1-plugin
-        run: cargo build --release --target x86_64-pc-windows-msvc -p fm1-plugin
+      # Запускаем сборку всего воркспейса. Cargo сам определит плагин.
+      - name: Build Project Workspace
+        run: cargo build --release --target x86_64-pc-windows-msvc
 
+      # Сохраняем все скомпилированные .dll и .clap плагины
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fm1-emu-windows-x64-clap
-          path: target/x86_64-pc-windows-msvc/release/*.dll
+          # Маска найдет любые скомпилированные библиотеки в папке релиза
+          path: |
+            target/x86_64-pc-windows-msvc/release/*.dll
+            target/x86_64-pc-windows-msvc/release/*.clap
           if-no-files-found: error
