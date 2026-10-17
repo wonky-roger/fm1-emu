@@ -25,16 +25,16 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: "windows-clap-cache"
+          shared-key: "windows-clap-vst3-cache"
 
       - name: Build and Bundle CLAP/VST3 Plugin
-        run: cargo xtask bundle fm1_plugin --release
+        run: cargo run --package xtask --target x86_64-pc-windows-msvc -- bundle fm1_plugin --release
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fm1-emu-windows-x64-clap-vst3
           path: |
-            target/release/*.clap
-            target/release/*.vst3
+            target/x86_64-pc-windows-msvc/release/*.clap
+            target/x86_64-pc-windows-msvc/release/*.vst3
           if-no-files-found: error
