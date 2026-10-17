@@ -19,21 +19,35 @@ jobs:
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
           targets: x86_64-pc-windows-msvc
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
           shared-key: "windows-clap-cache"
+          workspaces: |
+            . -> target
+            crates/fm1-plugin -> target
 
       - name: Build fm1-plugin
         working-directory: crates/fm1-plugin
         run: cargo build --release --target x86_64-pc-windows-msvc
 
+      - name: Find and rename DLL to .clap
+        shell: bash
+        run: |
+          echo "--- all dll/clap files in build dirs ---"
+          find . -path "*/release/*" \( -name "*.dll" -o -name "*.clap" \) -not -path "*/deps/*" -not -path "./.git/*"
+          mkdir -p dist
+          for f in $(find . -path "*/x86_64-pc-windows-msvc/release/*" -maxdepth 6 -name "*.dll" -not -path "*/deps/*"); do
+            name=$(basename "$f" .dll)
+            cp "$f" "dist/${name}.clap"
+          done
+          ls -la dist
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fm1-emu-windows-x64-clap
-          path: target/**/release/*.dll
+          path: dist/*.clap
           if-no-files-found: error
